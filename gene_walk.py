@@ -3,6 +3,7 @@ import pickle
 import random
 import networkx as nx
 from tqdm import *
+import multiprocessing as mp
 
 DATA_DIR = os.getcwd() + "/data/"
 DUMP_DIR = os.getcwd() + "/metapath/"
@@ -134,7 +135,7 @@ def main(dataset, len_walk, cvg, use_full):
     print("\t- Generating walks ...")
 
     rand = random.Random(2019)
-    walks = []
+    # walks = []
 
     for mp in metapaths:
         print("\t\t - now by MP-{}".format(mp))
@@ -142,11 +143,23 @@ def main(dataset, len_walk, cvg, use_full):
         init_node_list = get_typed_nodes(G, init_node_type)
         total = len(init_node_list)                
 
-        for _ in tqdm(range(cvg)):  # Iterate the node set for cnt times
-            rand.shuffle(init_node_list)
-            for init_node in init_node_list:
-                walks.append(meta_path_walk(G, start=init_node, 
-                                            len_walk=len_walk, pattern=mp))
+        walks = []
+
+        if multiproc > 1:
+            cvg_per_process = cvg // multiproc
+            p = mp.Pool(process=multiproc)
+            for i in range(multiproc):
+                res = p.apply_async(worker, (G, init_node_list, cvg_per_process, ))
+                walks += res
+            p.close()
+            p.join()
+
+        else:
+            for _ in tqdm(range(cvg)):  # Iterate the node set for cnt times
+                rand.shuffle(init_node_list)
+                for init_node in init_node_list:
+                    walks.append(meta_path_walk(G, start=init_node, 
+                                                len_walk=len_walk, pattern=mp))
 
     print("\t- [Generate walks: Done!]")
     
@@ -165,18 +178,28 @@ def main(dataset, len_walk, cvg, use_full):
     print("\t- [Dumping walks: Done!]")
     print("Process Succeeded!")
 
+def worker(G, init_node_list, cvg):
+    walks = []
+    for _ in range(cvg):  # Iterate the node set for cnt times
+        rand.shuffle(init_node_list)
+        for init_node in init_node_list:
+            walks.append(meta_path_walk(G, start=init_node, 
+                                        len_walk=len_walk, pattern=mp))
+    return walks
+
 if __name__ == "__main__":
-    if len(sys.argv) != 1 + 4:  # TODO
+    if len(sys.argv) != 1 + 5:  # TODO
         print("Invalid Parameters!")
         print("Usage:\n",
               "\tpython {} [path] [dataset] ".format(sys.argv[0]),
-              "[full_graph] [length_of_walk] [coverage]")
+              "[full_graph] [length_of_walk] [coverage] [multiprocessing]")
         sys.exit(1)
 
     dataset = sys.argv[1]
     use_full = (int(sys.argv[2]) == 1)
     len_walk = int(sys.argv[3])
     cvg = int(sys.argv[4])
+    multiproc = int(sys.argv[5])
 
     print("Metapath Generation:\n",
           "\tProcessing dataset: {}\n".format(dataset),
@@ -185,11 +208,6 @@ if __name__ == "__main__":
     main(dataset,
          len_walk,
          cvg,
-         use_full)    
-
-
-    
-    
-
-
+         use_full,
+         multiproc)    
 
