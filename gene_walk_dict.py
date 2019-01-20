@@ -28,9 +28,6 @@ def meta_path_walk(G,
         walk - the single walk generated
 
     """
-    def type_of(node_id):
-        return node_id[0]
-
     rand = random.Random()
     # Checking pattern is correctly initialized
     if not pattern:
@@ -103,10 +100,12 @@ def main(dataset, len_walk, cvg, use_full, multiproc):
             if id2 not in type_nbrs:
                 type_nbrs[id2] = dict(zip(all_types, [set() for _ in range(len(all_types))]))
             
-            type_nbrs[id1][type1].add(id2)
+            type_nbrs[id1][type2].add(id2)
             type_nbrs[id2][type1].add(id1)
             type_nodes[type1].add(id1)
             type_nodes[type2].add(id2)
+        
+        # print(type_nbrs)
         
     print("\t- [Building graph: Done!]")
     
@@ -156,6 +155,7 @@ def main(dataset, len_walk, cvg, use_full, multiproc):
                                 start=init_node, 
                                 len_walk=len_walk, 
                                 pattern=mp))
+                    # print(walks)
     print("\t\tNumber of walks generated :", end=" ")
     print(len(walks))
 
@@ -188,6 +188,7 @@ def worker(G, init_node_list, cvg, len_walk, metapath):
                         start=init_node, 
                         len_walk=len_walk, 
                         pattern=metapath))
+            # print(per_walks[-1])
     return per_walks
 
 if __name__ == "__main__":
