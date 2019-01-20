@@ -5,14 +5,22 @@ Zeyu Li <zyli@cs.ucla.edu>
 ### Run 
 
 ```
-$ python3 [dataset] [full_graph] [length_of_walk] [coverage] [multiprocessing]
+$ python3 gene_walk.py [dataset] [full_graph] [length_of_walk] [coverage] [multiprocessing]
 ```
+
+or using the other version that implemented by dictionary instead of `networkx`.
+
+```
+$ python3 gene_walk_dict.py [dataset] [full_graph] [length_of_walk] [coverage] [multiprocessing]
+```
+The latter runs faster.
 
 The parameters are the following:
 - __dataset__: the name of the dataset
 - __full_graph__: when 1, using full graph, otherwise use `[dataset].edges.lp.train` for link prediction
 - __length_of_walk__: length of the walk, metapath2vec set it to 100
 - __coverage__: the `numwalks` parameters, the number of times each node was covered 
+- __multiprocessing__: the number of processes to run the generation. 
 
 
 ### Input
