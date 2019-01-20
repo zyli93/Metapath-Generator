@@ -74,14 +74,7 @@ def meta_path_walk(G,
             try:
                 next_node = rand.choice(possible_next_node)
             except:
-                # print("pattern", pattern)
-                # print("pat_ind", pat_ind)
-                # print("pattern[pat_ind]", pattern[pat_ind])
-                # print("cur_node", cur_node)
-                # print("possible_next_node", possible_next_node)
-                # print("walk", walk)
                 return " ".join(walk)
-                # sys.exit()
         else:
             next_node = walk[0]
 
@@ -96,9 +89,8 @@ def main(dataset, len_walk, cvg, use_full, multiproc):
     # =============
     # Load Metapath
     # =============
-    dataset_suffix = "" if use_full else ".lp.train" 
     with open(DATA_DIR + 
-              "{}.metapath{}".format(dataset, dataset_suffix), "r") as fin:
+              "{}.metapath".format(dataset), "r") as fin:
         metapaths = [x.strip() for x in fin.readlines()]
 
     # ===============
@@ -116,7 +108,8 @@ def main(dataset, len_walk, cvg, use_full, multiproc):
     G = nx.Graph()
     edges_list = []
 
-    with open(DATA_DIR + "{}.edges".format(dataset), "r") as fin:
+    dataset_suffix = "" if use_full else ".lp.train" 
+    with open(DATA_DIR + "{}.edges{}".format(dataset, dataset_suffix), "r") as fin:
         for line in fin.readlines():
             id1, id2 = [int(x) for x in line.strip().split("\t")]
             node1 = node_types[id1] + "_" + str(id1)
@@ -124,7 +117,6 @@ def main(dataset, len_walk, cvg, use_full, multiproc):
             edges_list.append([node1, node2]) 
         
     G.add_edges_from(edges_list)
-    # print(G.nodes)
 
     print("\t- [Building graph: Done!]")
     
