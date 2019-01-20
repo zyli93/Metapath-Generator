@@ -204,7 +204,7 @@ if __name__ == "__main__":
     if len(sys.argv) != 1 + 5:  # TODO
         print("Invalid Parameters!")
         print("Usage:\n",
-              "\tpython {} [path] [dataset] ".format(sys.argv[0]),
+              "\tpython {} [dataset]".format(sys.argv[0]),
               "[full_graph] [length_of_walk] [coverage] [multiprocessing]")
         sys.exit(1)
 
