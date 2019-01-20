@@ -143,11 +143,11 @@ def main(dataset, len_walk, cvg, use_full, multiproc):
 
             for i in range(multiproc):
                 res = pool.apply_async(worker, 
-                                       args=((G, 
-                                              init_node_list, 
-                                              cvg_per_process,
-                                              len_walk,
-                                              mp)))
+                                       args=(G, 
+                                             init_node_list, 
+                                             cvg_per_process,
+                                             len_walk,
+                                             mp))
                 async_results.append(res)
 
             pool.close()
