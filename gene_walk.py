@@ -3,7 +3,7 @@ import pickle
 import random
 import networkx as nx
 from tqdm import *
-import multiprocessing as mp
+from multiprocessing import Pool
 
 DATA_DIR = os.getcwd() + "/data/"
 DUMP_DIR = os.getcwd() + "/metapath/"
@@ -74,12 +74,12 @@ def meta_path_walk(G,
             try:
                 next_node = rand.choice(possible_next_node)
             except:
-                print("pattern", pattern)
-                print("pat_ind", pat_ind)
-                print("pattern[pat_ind]", pattern[pat_ind])
-                print("cur_node", cur_node)
-                print("possible_next_node", possible_next_node)
-                print("walk", walk)
+                # print("pattern", pattern)
+                # print("pat_ind", pat_ind)
+                # print("pattern[pat_ind]", pattern[pat_ind])
+                # print("cur_node", cur_node)
+                # print("possible_next_node", possible_next_node)
+                # print("walk", walk)
                 return " ".join(walk)
                 # sys.exit()
         else:
@@ -91,7 +91,7 @@ def meta_path_walk(G,
 
     return " ".join(walk)
 
-def main(dataset, len_walk, cvg, use_full):
+def main(dataset, len_walk, cvg, use_full, multiproc):
 
     # =============
     # Load Metapath
@@ -135,7 +135,7 @@ def main(dataset, len_walk, cvg, use_full):
     print("\t- Generating walks ...")
 
     rand = random.Random(2019)
-    # walks = []
+    walks = []
 
     for mp in metapaths:
         print("\t\t - now by MP-{}".format(mp))
@@ -143,23 +143,39 @@ def main(dataset, len_walk, cvg, use_full):
         init_node_list = get_typed_nodes(G, init_node_type)
         total = len(init_node_list)                
 
-        walks = []
+        async_results = []
 
         if multiproc > 1:
             cvg_per_process = cvg // multiproc
-            p = mp.Pool(process=multiproc)
+            pool = Pool(processes=multiproc)
+
             for i in range(multiproc):
-                res = p.apply_async(worker, (G, init_node_list, cvg_per_process, ))
-                walks += res
-            p.close()
-            p.join()
+                res = pool.apply_async(worker, 
+                                       args=((G, 
+                                              init_node_list, 
+                                              cvg_per_process,
+                                              len_walk,
+                                              mp)))
+                async_results.append(res)
+
+            pool.close()
+            pool.join()
+
+            for r in async_results:
+                walks += r.get()
 
         else:
             for _ in tqdm(range(cvg)):  # Iterate the node set for cnt times
                 rand.shuffle(init_node_list)
                 for init_node in init_node_list:
-                    walks.append(meta_path_walk(G, start=init_node, 
-                                                len_walk=len_walk, pattern=mp))
+                    walks.append(
+                            meta_path_walk(
+                                G, 
+                                start=init_node, 
+                                len_walk=len_walk, 
+                                pattern=mp))
+    print("\t\tNumber of walks generated :", end=" ")
+    print(len(walks))
 
     print("\t- [Generate walks: Done!]")
     
@@ -178,14 +194,19 @@ def main(dataset, len_walk, cvg, use_full):
     print("\t- [Dumping walks: Done!]")
     print("Process Succeeded!")
 
-def worker(G, init_node_list, cvg):
-    walks = []
+def worker(G, init_node_list, cvg, len_walk, metapath):
+    rand = random.Random(2019)
+    per_walks = []
     for _ in range(cvg):  # Iterate the node set for cnt times
         rand.shuffle(init_node_list)
         for init_node in init_node_list:
-            walks.append(meta_path_walk(G, start=init_node, 
-                                        len_walk=len_walk, pattern=mp))
-    return walks
+            per_walks.append(
+                    meta_path_walk(
+                        G, 
+                        start=init_node, 
+                        len_walk=len_walk, 
+                        pattern=metapath))
+    return per_walks
 
 if __name__ == "__main__":
     if len(sys.argv) != 1 + 5:  # TODO
