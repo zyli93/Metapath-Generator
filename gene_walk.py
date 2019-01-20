@@ -224,6 +224,7 @@ if __name__ == "__main__":
 
     print("Metapath Generation:\n",
           "\tProcessing dataset: {}\n".format(dataset),
+          "\tUsing full graph: {}\n".format("True" if use_full else "False"),
           "\tLength of Walk: {}, Coverage: {}".format(len_walk, cvg))
 
     main(dataset,
