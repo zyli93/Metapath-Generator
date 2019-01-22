@@ -8,7 +8,7 @@ OUTPUT_DIR = "./typed_walk/"
 target_type = ['v', 'i', 'f', 'a']
 
 yelp_type = ['B', 'C', 'L', 'U']
-movielens_type = ['B', 'C', 'L', 'U']
+movielens_type = ['A', 'D', 'M', 'U']
 dbis_type = ['A', 'P', 'V']
 aminer_type = ['A', 'P', 'V']
 
@@ -44,6 +44,6 @@ if __name__ == "__main__":
         sys.exit(1)
     
     dataset = sys.argv[1]
-    full_graph = int(sys.argv[2])
+    full_graph = True if int(sys.argv[2]) == 1 else False
 
     main(dataset, full_graph)
