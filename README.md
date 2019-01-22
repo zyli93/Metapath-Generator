@@ -29,3 +29,17 @@ The parameters are the following:
 2. `[dataset].type`: a pickle dumpped file in this form - `[id1_type, id2_type, ...]`. Type is represented by char, such as `A`. [binary]
 3. `[dataset].edge.lp.train`: subgraph for training of link prediction [plain text]
 4. `[dataset].metapath`: a set of metapath separated by `\n`. [plain text]
+
+
+### What are the dirs?
+
+[file name]: useage [if it's the input/output of some model or neither]
+
+- embeddings: generated embeddings from metapath2vec++ [output]
+- hin_data: reformatted data for hin2vec [input]
+- hin_embeddings: generated embeddings from hin2vec [output]
+- metapath: generated walks composed by id's only [neither]
+- metapath_100_1000: huge length of walks (metapath2vec's authors' suggestion) [neigher]
+- metapath2vec: metapath2vec source code [src]
+- pte: [NOT USED]
+- typed_walk: adding type before each id's , input of metapath2vec [input]
