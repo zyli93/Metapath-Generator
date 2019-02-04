@@ -39,13 +39,22 @@ def main(dataset, full_graph):
 
             type_str = "".join([type1, type2])
 
-            if type_str or type_str[::-1] in net_edge:
+            if type_str in net_edge:
                 fout_net.write(
                     "{} {} {} {}\n".format(id1, id2, 1, "w")
                 )
+            elif type_str[::-1] in net_edge:
+                fout_net.write(
+                    "{} {} {} {}\n".format(id2, id1, 1, "w")
+                )
 
-    print(ent)
-    print(interest_ent)
+           # if type_str or type_str[::-1] in net_edge:
+           #     fout_net.write(
+           #         "{} {} {} {}\n".format(id1, id2, 1, "w")
+           #     )
+
+    # print(ent)
+    # print(interest_ent)
 
     with open(OUTPUT_DIR + "{}.node{}".format(dataset, dataset_suffix), "w") as fout_node, \
         open(OUTPUT_DIR + "{}.word{}".format(dataset, dataset_suffix), "w") as fout_word: 
