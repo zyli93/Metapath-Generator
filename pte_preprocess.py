@@ -57,7 +57,7 @@ def main(dataset, full_graph):
     # print(interest_ent)
 
     with open(OUTPUT_DIR + "{}.node{}".format(dataset, dataset_suffix), "w") as fout_node, \
-        open(OUTPUT_DIR + "{}.word{}".format(dataset, dataset_suffix), "w") as fout_word: 
+        open(OUTPUT_DIR + "{}.word{}".format(dataset, dataset_suffix), "w") as fout_word:
         
         for i, t in enumerate(type_list):
             if t in ent:
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         print("Usage:\npython {} [dataset] [full_graph] [type] [node]".format(sys.argv[0]))
         sys.exit(0)
     
-    dataset = sys.argv[1]
+    ataset = sys.argv[1]
     full_graph = True if int(sys.argv[2]) == 1 else False
 
     main(dataset, full_graph)
