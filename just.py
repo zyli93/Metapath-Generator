@@ -10,7 +10,7 @@ from multiprocessing import Pool
 from tqdm import tqdm
 
 DATA_DIR = os.getcwd() + "/data/"
-DUMP_DIR = os.getcwd() + "/jump_walk/"
+DUMP_DIR = os.getcwd() + "/just_walk/"
 
 def just_walk(G, 
               node_type, 
