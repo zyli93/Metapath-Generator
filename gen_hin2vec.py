@@ -7,6 +7,8 @@ Author: Zeyu Li
 import os
 import sys
 import pandas as pd
+from tqdm import tqdm
+
 try:
     import _Pickle as pickle
 except:
@@ -40,14 +42,16 @@ def read_file(ds, lp):
     return id2type, edges
 
 
-def build_input_file(id2type, edges):
+def build_input_file(id2type, edges, lp, dataset):
     output_dir = "HIN2VEC_DATA"
-    if os.path.isdir(output_dir):
+    if not os.path.isdir(output_dir):
         os.mkdir(output_dir)
-    with open(output_dir + "hin2vec_edges", "w") as fout:
+
+    suffix = ".lp.train" if lp else ""
+    with open(output_dir + "/{}.hin2vec_edges{}".format(dataset, suffix), "w") as fout:
         n_edge = edges.shape[0]
-        for i in range(n_edge):
-            u1, u2 = n_edge[i][0], n_edge[i][1]
+        for i in tqdm(range(n_edge)):
+            u1, u2 = edges[i][0], edges[i][1]
             tu1, tu2 = id2type[u1], id2type[u2]
             line = "{}\t{}\t{}\t{}\t{}-{}".format(
                 u1, tu1, u2, tu2, tu1, tu2)
@@ -59,7 +63,8 @@ def build_input_file(id2type, edges):
 
 if __name__ == "__main__":
     if len(sys.argv) <  1 + 2:
-        print("[dataset] [lp]")
+        sys.exit("[dataset] [lp]")
+        
     dataset = sys.argv[1]
     lp = int(sys.argv[2])
     assert dataset in ["movielens", "yelp", "dbis"], "invalid dataset"
@@ -68,7 +73,7 @@ if __name__ == "__main__":
     i2t, edges = read_file(dataset, lp)
 
     print("building + writing ...")
-    build_input_file(i2t, edges)
+    build_input_file(i2t, edges, lp, dataset)
 
     print("Done!")
 
